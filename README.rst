@@ -13,24 +13,30 @@ QuickStart
 
     git clone git@github.com:allred/slack-beebot.git
 
-2. Install Required Libraries:
+2. Install required libraries:
 
     pip install -r requirements.txt
 
-3. Add necessary Bot integration in Slack
+3. Add a Bot integration in Slack and get the token
 
 4. Set environmental variables:
 
 	export SLACK_BOT_TOKEN="xoxb-111111111111-XXXXXXXXXXXXXXXXXXXXXXXX"
 
-5. Use Beebot:
+5. Run Beebot:
 
 	cd slack-beebot && python beebot.py
+
+6. Invite the bot to a channel which will be monitored
+
+7. Direct-message the bot for usage info:
+
+   showme usage
 
 Requirements
 ============
 
-slack-beebot requires the following modules:
+slack-beebot requires the following:
 
 * Python 2.7+
 * slackclient
