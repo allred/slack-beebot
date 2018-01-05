@@ -164,8 +164,6 @@ usage:
     {:{w}} {:{w}}
     {:{w}} {:{w}}
     {:{w}} {:{w}}
-
-For more stats see http://beebot.now.im
 ```'''.format(
         'showme', '[top|all|clicked] <reaction>',
         'showme', '[given|received]',
