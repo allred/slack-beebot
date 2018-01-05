@@ -4,18 +4,18 @@ slack-beebot
 Beebot is a python slack bot that counts and reports on users reactions.
 It uses the Slack RTM API and the slackclient library.
 
-|build-status|
+.. |build-status|
 
 QuickStart
 ==========
 
 1. Clone the git repository:
 
-    git clone git@github.com:itzo/slack-beebot.git
+    git clone git@github.com:allred/slack-beebot.git
 
-2. Install Required Library:
+2. Install Required Libraries:
 
-    pip install slackclient
+    pip install -r requirements.txt
 
 3. Add necessary Bot integration in Slack
 
