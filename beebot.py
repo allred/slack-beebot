@@ -278,7 +278,7 @@ def print_given(channel_id, user=None):
         sys.exit(2)
 
 
-# get slack team info such as users, channels, and im's for later use
+# get slack team info such as users, channels, and ims for later use
 def get_info():
     # get user data
     user_data = sc.api_call('users.list')
