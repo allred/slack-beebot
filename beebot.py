@@ -107,12 +107,18 @@ def parse_event(event):
             reaction = data['reaction'].split(':')[0] # strip skin-tones
             from_user = data['user']
             to_user = data['item_user']
+            try:
+                exists = users[to_user]
+                exists = users[from_user]
+            except:
+                print("user not found, reloading channel info")
+                get_info()
             if data['type'] == 'reaction_added' and from_user != to_user:
-                print "%s reacted with '%s' to %s" % (users[from_user], reaction, users[to_user])
+                print "%s reacted with '%s' to %s" % (users.get(from_user, "unknown"), reaction, users.get(to_user, "unknown"))
                 counter = '1'
                 db_insert(from_user, to_user, reaction, counter)
             elif data['type'] == 'reaction_removed' and from_user != to_user:
-                print "%s withdrew their reaction of '%s' from %s" % (users[from_user], reaction, users[to_user])
+                print "%s withdrew their reaction of '%s' from %s" % (users.get(from_user, "unknown"), reaction, users.get(to_user, "unknown"))
                 counter = '-1'
                 db_insert(from_user, to_user, reaction, counter)
             return reaction, from_user, to_user
@@ -130,7 +136,7 @@ def parse_event(event):
                 if len(data['text'].split()) > 1:
                     mode = data['text'].lower().split()[1]
                     if mode == 'version':
-                        print "%s requested to see bot version" % (users[data['user']])
+                        print "%s requested to see bot version" % (users.get(data['user']))
                         bot_version(channel_id)
                         return None, None, None
                     elif mode == 'received':
@@ -144,9 +150,9 @@ def parse_event(event):
                     if re.match(r'^[A-Za-z0-9_+-]+$', reaction):
                         from_user = data['user']
                         if channel_id in channels:
-                            print "%s requested to see %s %s in #%s" % (users[from_user], mode, reaction, channels[channel_id])
+                            print "%s requested to see %s %s in #%s" % (users.get(from_user), mode, reaction, channels[channel_id])
                         else:
-                            print "%s requested to see %s %s via IM" % (users[from_user], mode, reaction)
+                            print "%s requested to see %s %s via IM" % (users.get(from_user), mode, reaction)
                         if reaction in emojis:
                             reaction = emojis[reaction]
                         print_top(reaction, channel_id, mode)
