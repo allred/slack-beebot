@@ -29,9 +29,9 @@ QuickStart
 
 6. Invite the bot to a channel which will be monitored
 
-7. Direct-message the bot for usage info:
+7. Direct-message the bot for usage info
 
-   showme usage
+  showme usage
 
 Requirements
 ============
