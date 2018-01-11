@@ -2,14 +2,16 @@
 
 import argparse
 import datetime
+import errno
 import os
 import re
 import time
-from slackclient import SlackClient
+import socket
 import sqlite3 as db
 import subprocess
 import sys
-import websocket, socket, errno
+import websocket
+from slackclient import SlackClient
 
 # TODO: add logging mechanism
 # TODO: exclude all bots (slackbot, beebot, etc..) from stats
@@ -31,7 +33,8 @@ class timestamped:
             old_out.write(x)
             self.nl = True
         elif self.nl:
-            old_out.write('[ %s ] %s' % (str(int(time.time())), x))
+            dtstamp = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d %H%M%S")
+            old_out.write('[%s] %s' % (dtstamp, x))
             self.nl = False
         else:
             old_out.write(x)
