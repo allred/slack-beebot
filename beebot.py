@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import datetime
 import errno
 import os
@@ -11,6 +10,7 @@ import sqlite3 as db
 import subprocess
 import sys
 import websocket
+from docopt import docopt
 from slackclient import SlackClient
 
 # TODO: add logging mechanism
@@ -40,26 +40,21 @@ class timestamped:
             old_out.write(x)
 sys.stdout = timestamped()
 
+help_message = """
+Usage:
+    beebot.py -m [channel|dm|quiet]
+    beebot.py [-hd]
 
-# get arguments and usage
-def get_parser():
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-m', '--mode', default='dm', choices=['quiet', 'dm', 'channel'],
-        help="""where MODE can be one of [quiet|dm|channel].
-- quiet            don't reply to 'showme' requests.
-- dm (default)     send replies via direct message just to the requestor.
-- channel          reply where the request was received (channel/dm).""")
-    parser.add_argument('-d', '--debug', action='store_true',
-        help='print debug messages.')
-    return parser
+Options:
+    -h           Show this screen.
+    -d           Print debug messages.
+    -m  Choose mode.
 
-
-# parse and validate arguments
-def parse_args():
-    parser = get_parser()
-    args = parser.parse_args()
-    return args
-
+Modes:
+    channel  Reply in the channel/dm where the request was received.
+    dm       Send replies via direct message just to the requestor. default
+    quiet    Don't reply to "showme" requests.
+"""
 
 # create db table if none exists
 def create_db():
@@ -100,7 +95,7 @@ def db_insert(from_user, to_user, reaction, counter):
 
 # parse slack events for reactions / commands
 def parse_event(event):
-    if args.debug is True:
+    if args.get("debug"):
         print str(event) + '\n'
     if event and len(event) > 0:
 
@@ -129,9 +124,11 @@ def parse_event(event):
         # answer commands
         if 'text' in data:
             channel_id = data['channel']
-            if args.mode == 'quiet':
+            if runmode == "quiet":
                 return None, None, None
-            elif args.mode == 'dm':
+            elif runmode == "channel":
+                pass
+            else:
                 if 'user' in data:
                     channel_id = data['user']
             mode = None
@@ -316,7 +313,7 @@ def get_info():
 def sl_connect(retry):
     try:
         if sc.rtm_connect():
-            print('INFO: Bot connected and running in [ ' + args.mode + ' ] mode!')
+            print('INFO: Bot connected and running in [ ' + runmode + ' ] mode!')
             global con_retry
             con_retry = 0
             get_info()
@@ -361,7 +358,14 @@ def sl_con_retry():
 
 # main
 if __name__ == '__main__':
-    args = parse_args()
+    args = docopt(help_message)
+    runmode = None
+    if args.get("quiet"):
+        runmode = "quiet"
+    elif args.get("channel"):
+        runmode = "channel"
+    else:
+        runmode = "dm"
     # initialize db if it doesn't exist
     if os.path.exists('./reactions.db') == False:
         create_db()
