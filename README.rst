@@ -13,13 +13,11 @@ QuickStart
 
     git clone git@github.com:allred/slack-beebot.git
 
-2. Install pyenv
-
-    Follow instructions at https://github.com/pyenv/pyenv-installer
+2. Install pyenv (instructions at https://github.com/pyenv/pyenv-installer)
 
     pyenv install 3.6.4
 
-    pyenv virtualenv beebot 3.6.4
+    pyenv virtualenv 3.6.4 beebot
 
     pyenv activate beebot
 
