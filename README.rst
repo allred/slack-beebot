@@ -16,27 +16,30 @@ QuickStart
 2. Install pyenv
 
     Follow instructions at https://github.com/pyenv/pyenv-installer
+
     pyenv install 3.6.4
+
     pyenv virtualenv beebot 3.6.4
+
     pyenv activate beebot
 
-2. Install required libraries:
+3. Install required libraries:
 
     pip install -r requirements.txt
 
-3. Add a Bot integration in Slack and get the token
+4. Add a Bot integration in Slack and get the token
 
-4. Set environmental variables:
+5. Set environmental variables:
 
 	export SLACK_BOT_TOKEN="xoxb-111111111111-XXXXXXXXXXXXXXXXXXXXXXXX"
 
-5. Run Beebot:
+6. Run Beebot:
 
 	cd slack-beebot && python beebot.py
 
-6. Invite the bot to a channel which will be monitored
+7. Invite the bot to a channel which will be monitored
 
-7. Direct-message the bot for usage info
+8. Direct-message the bot for usage info
 
 	showme usage
 
