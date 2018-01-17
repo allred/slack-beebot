@@ -13,6 +13,13 @@ QuickStart
 
     git clone git@github.com:allred/slack-beebot.git
 
+2. Install pyenv
+
+    Follow instructions at https://github.com/pyenv/pyenv-installer
+    pyenv install 3.6.4
+    pyenv virtualenv beebot 3.6.4
+    pyenv activate beebot
+
 2. Install required libraries:
 
     pip install -r requirements.txt
@@ -31,14 +38,14 @@ QuickStart
 
 7. Direct-message the bot for usage info
 
-  showme usage
+	showme usage
 
 Requirements
 ============
 
 slack-beebot requires the following:
 
-* Python 2.7+
+* Python 3.6+
 * slackclient
 
 .. |build-status| image:: https://travis-ci.org/itzo/slack-beebot.svg?branch=master
