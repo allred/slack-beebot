@@ -27,6 +27,9 @@ con_retry = 0
 old_out = sys.stdout
 class timestamped:
     nl = True
+    def flush(self):
+        pass
+
     def write(self, x):
         # overload write()
         if x == '\n':
@@ -70,10 +73,10 @@ def create_db():
                 counter INTEGER
             );""")
         con.commit()
-    except db.Error, e:
+    except db.Error as e:
         if con:
             con.rollback()
-        print "Error %s:" % e.args[0]
+        print("Error %s:" % e.args[0])
         sys.exit(1)
     finally:
         if con:
@@ -89,14 +92,14 @@ def db_insert(from_user, to_user, reaction, counter):
             (from_user, to_user, reaction, counter));
         con.commit()
     else:
-        print "Can't find the database.\n"
+        print("Can't find the database.\n")
         sys.exit(2)
 
 
 # parse slack events for reactions / commands
 def parse_event(event):
     if args.get("debug"):
-        print str(event) + '\n'
+        print(str(event) + '\n')
     if event and len(event) > 0:
 
         # process reactions
@@ -112,11 +115,11 @@ def parse_event(event):
                 print("user not found, reloading channel info")
                 get_info()
             if data['type'] == 'reaction_added' and from_user != to_user:
-                print "%s reacted with '%s' to %s" % (users.get(from_user, "unknown"), reaction, users.get(to_user, "unknown"))
+                print("%s reacted with '%s' to %s" % (users.get(from_user, "unknown"), reaction, users.get(to_user, "unknown")))
                 counter = '1'
                 db_insert(from_user, to_user, reaction, counter)
             elif data['type'] == 'reaction_removed' and from_user != to_user:
-                print "%s withdrew their reaction of '%s' from %s" % (users.get(from_user, "unknown"), reaction, users.get(to_user, "unknown"))
+                print("%s withdrew their reaction of '%s' from %s" % (users.get(from_user, "unknown"), reaction, users.get(to_user, "unknown")))
                 counter = '-1'
                 db_insert(from_user, to_user, reaction, counter)
             return reaction, from_user, to_user
@@ -136,7 +139,7 @@ def parse_event(event):
                 if len(data['text'].split()) > 1:
                     mode = data['text'].lower().split()[1]
                     if mode == 'version':
-                        print "%s requested to see bot version" % (users.get(data['user']))
+                        print("%s requested to see bot version" % (users.get(data['user'])))
                         bot_version(channel_id)
                         return None, None, None
                     elif mode == 'received':
@@ -150,9 +153,9 @@ def parse_event(event):
                     if re.match(r'^[A-Za-z0-9_+-]+$', reaction):
                         from_user = data['user']
                         if channel_id in channels:
-                            print "%s requested to see %s %s in #%s" % (users.get(from_user), mode, reaction, channels[channel_id])
+                            print("%s requested to see %s %s in #%s" % (users.get(from_user), mode, reaction, channels[channel_id]))
                         else:
-                            print "%s requested to see %s %s via IM" % (users.get(from_user), mode, reaction)
+                            print("%s requested to see %s %s via IM" % (users.get(from_user), mode, reaction))
                         if reaction in emojis:
                             reaction = emojis[reaction]
                         print_top(reaction, channel_id, mode)
@@ -211,19 +214,19 @@ def print_top(reaction, channel_id, mode):
             cur.execute(sql, [reaction])
             con.commit()
             rows = cur.fetchall()
-            print "Showing %s %s" % (mode, reaction)
+            print("Showing %s %s" % (mode, reaction))
             response = "```"
             if len(rows) > 0:
                 for row in rows:
-                    print "%-14s %+14d" % (users[row[0]], row[1])
+                    print("%-14s %+14d" % (users[row[0]], row[1]))
                     response += "{:14} {:14d}\n".format(users[row[0]],row[1])
             else:
                 response += "no '"+reaction+"' reactions found"
-                print "none found"
+                print("none found")
             response += "```"
             sc.api_call("chat.postMessage", channel=channel_id, text=response, as_user=True)
     else:
-        print "Can't find the database.\n"
+        print("Can't find the database.\n")
         sys.exit(2)
 
 
@@ -238,21 +241,21 @@ def print_received(channel_id, user=None):
             con.commit()
             rows = cur.fetchall()
             if user is None:
-                print "Showing number of received reactions per user:"
+                print("Showing number of received reactions per user:")
                 response = "```"
                 if len(rows) > 0:
                     for row in rows:
-                        print "%-14s %+14d" % (users[row[0]], row[1])
+                        print("%-14s %+14d" % (users[row[0]], row[1]))
                         response += "{:14} {:14d}\n".format(users[row[0]],row[1])
                 else:
                     response += "no reactions found"
-                    print "none found"
+                    print("none found")
                 response += "```"
                 sc.api_call("chat.postMessage", channel=channel_id, text=response, as_user=True)
             #else:
                 # print top 20 received reactions for a specific user in descending order
     else:
-        print "Can't find the database.\n"
+        print("Can't find the database.\n")
         sys.exit(2)
 
 # print given reactions
@@ -266,21 +269,21 @@ def print_given(channel_id, user=None):
             con.commit()
             rows = cur.fetchall()
             if user is None:
-                print "Showing number of given reactions per user:"
+                print("Showing number of given reactions per user:")
                 response = "```"
                 if len(rows) > 0:
                     for row in rows:
-                        print "%-14s %+14d" % (users[row[0]], row[1])
+                        print("%-14s %+14d" % (users[row[0]], row[1]))
                         response += "{:14} {:14d}\n".format(users[row[0]],row[1])
                 else:
                     response += "no reactions found"
-                    print "none found"
+                    print("none found")
                 response += "```"
                 sc.api_call("chat.postMessage", channel=channel_id, text=response, as_user=True)
             #else:
                 # print top 20 given reactions for a specific user in descending order
     else:
-        print "Can't find the database.\n"
+        print("Can't find the database.\n")
         sys.exit(2)
 
 
@@ -289,23 +292,23 @@ def get_info():
     # get user data
     user_data = sc.api_call('users.list')
     for user in user_data['members']:
-        print 'id: %s, name: %s' % (user['id'], user['name'])
+        print('id: %s, name: %s' % (user['id'], user['name']))
         users[user['id']] = user['name']
     # get channel data
     chan_data = sc.api_call('channels.list')
     for chan in chan_data['channels']:
-        print 'chan: %s, name: %s' % (chan['id'], chan['name'])
+        print('chan: %s, name: %s' % (chan['id'], chan['name']))
         channels[chan['id']] = chan['name']
     # get im data
     im_data = sc.api_call('im.list')
     for im in im_data['ims']:
-        print 'im: %s, user: %s' % (im['id'], users[im['user']])
+        print('im: %s, user: %s' % (im['id'], users[im['user']]))
         ims[im['id']] = users[im['user']]
     # get emoji data
     emoji_data = sc.api_call('emoji.list')
     for entry in emoji_data['emoji']:
         if 'alias:' in emoji_data['emoji'][entry]:
-            print 'alias: ' + entry + ' ==> '+ emoji_data['emoji'][entry].split(':')[1]
+            print('alias: ' + entry + ' ==> '+ emoji_data['emoji'][entry].split(':')[1])
             emojis[entry] = emoji_data['emoji'][entry].split(':')[1]
 
 
@@ -321,37 +324,37 @@ def sl_connect(retry):
                 try:
                     reaction, from_user, to_user = parse_event(sc.rtm_read())
                     time.sleep(1)
-                except socket.error, e:
+                except socket.error as e:
                     if isinstance(e.args, tuple):
-                        print "ERROR: errno is %d" % e[0]
+                        print("ERROR: errno is %d" % e[0])
                         if e[0] == errno.EPIPE:
                             # remote peer disconnected
-                            print "ERROR: Detected remote disconnect"
+                            print("ERROR: Detected remote disconnect")
                             sl_con_retry()
                         else:
                             # some different error
-                            print "ERROR: socket error: ", e
+                            print("ERROR: socket error: ", e)
                             sl_con_retry()
                     else:
-                        print "ERROR: socket error: ", e
+                        print("ERROR: socket error: ", e)
                         sl_con_retry()
                         break
-                except IOError, e:
-                    print "ERROR: IOError: ", e
+                except IOError as e:
+                    print("ERROR: IOError: ", e)
                     sl_con_retry()
                     break
         else:
-            print 'ERROR: Connection failed. Token or network issue.'
+            print('ERROR: Connection failed. Token or network issue.')
             sl_con_retry()
     except websocket._exceptions.WebSocketConnectionClosedException:
-        print 'ERROR: Connection closed. Did someone disable the bot integration?'
+        print('ERROR: Connection closed. Did someone disable the bot integration?')
         sl_con_retry()
 
 
 def sl_con_retry():
     global con_retry
     con_retry += 1
-    print "INFO: Connection retry #%d sleeping for %d seconds..." % (con_retry, con_retry*2)
+    print("INFO: Connection retry #%d sleeping for %d seconds..." % (con_retry, con_retry*2))
     time.sleep(con_retry*2)
     sl_connect(con_retry)
 
