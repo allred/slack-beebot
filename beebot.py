@@ -176,11 +176,9 @@ usage:
     {:{w}} {:{w}}
     {:{w}} {:{w}}
     {:{w}} {:{w}}
-    {:{w}} {:{w}}
 ```'''.format(
         'showme', '[top|all|clicked] <reaction>',
-        'showme', '[given|received]',
-        'showme', '[reactions]',
+        'showme', '[given|received|reactions]',
         'showme', '[version]',
         w=7,
     )
