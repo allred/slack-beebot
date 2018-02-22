@@ -148,6 +148,9 @@ def parse_event(event):
                     elif mode == 'given':
                         print_given(channel_id)
                         return None, None, None
+                    elif mode == 'reactions':
+                        print_reactions(channel_id)
+                        return None, None, None
                 if len(data['text'].split()) > 2:
                     reaction = data['text'].lower().split()[2]
                     if re.match(r'^[A-Za-z0-9_+-]+$', reaction):
@@ -173,9 +176,11 @@ usage:
     {:{w}} {:{w}}
     {:{w}} {:{w}}
     {:{w}} {:{w}}
+    {:{w}} {:{w}}
 ```'''.format(
         'showme', '[top|all|clicked] <reaction>',
         'showme', '[given|received]',
+        'showme', '[reactions]',
         'showme', '[version]',
         w=7,
     )
@@ -286,6 +291,31 @@ def print_given(channel_id, user=None):
         print("Can't find the database.\n")
         sys.exit(2)
 
+def print_reactions(channel_id, user=None):
+    if not os.path.isfile('reactions.db'):
+        print("Can't find the database.\n")
+        sys.exit(2)
+    con = db.connect('reactions.db')
+    with con:
+        cur = con.cursor()
+        sql = "SELECT reaction, sum(counter) as count from reactions group by reaction order by count desc limit 10"
+        cur.execute(sql)
+        rows = cur.fetchall()
+        column_width = len(max([row[0] for row in rows], key=len)) + 1
+        if user is None:
+            print("Showing number of reactions:")
+            response = "```"
+            if len(rows) > 0:
+                for row in rows:
+                    output = f"{row[0]:{column_width}} {row[1]}"
+                    print(output)
+                    response += f"{output}\n"
+            else:
+                output = "no reactions found"
+                response += output
+                print(output)
+            response += "```"
+            sc.api_call("chat.postMessage", channel=channel_id, text=response, as_user=True)
 
 # get slack team info such as users, channels, and ims for later use
 def get_info():
