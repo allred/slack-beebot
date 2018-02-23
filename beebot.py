@@ -217,12 +217,14 @@ def print_top(reaction, channel_id, mode):
             cur.execute(sql, [reaction])
             con.commit()
             rows = cur.fetchall()
+            column_width = len(max([row[0] for row in rows], key=len)) + 1
             print("Showing %s %s" % (mode, reaction))
             response = "```"
             if len(rows) > 0:
                 for row in rows:
-                    print("%-14s %+14d" % (users[row[0]], row[1]))
-                    response += "{:14} {:14d}\n".format(users[row[0]],row[1])
+                    output = f"{users[row[0]]:{column_width}} {row[1]}"
+                    print(output)
+                    response += f"{output}\n"
             else:
                 response += "no '"+reaction+"' reactions found"
                 print("none found")
@@ -243,13 +245,15 @@ def print_received(channel_id, user=None):
             cur.execute(sql)
             con.commit()
             rows = cur.fetchall()
+            column_width = len(max([row[0] for row in rows], key=len)) + 1
             if user is None:
                 print("Showing number of received reactions per user:")
                 response = "```"
                 if len(rows) > 0:
                     for row in rows:
-                        print("%-14s %+14d" % (users[row[0]], row[1]))
-                        response += "{:14} {:14d}\n".format(users[row[0]],row[1])
+                        output = f"{users[row[0]]:{column_width}} {row[1]}"
+                        print(output)
+                        response += f"{output}\n"
                 else:
                     response += "no reactions found"
                     print("none found")
@@ -271,13 +275,16 @@ def print_given(channel_id, user=None):
             cur.execute(sql)
             con.commit()
             rows = cur.fetchall()
+            column_width = len(max([row[0] for row in rows], key=len)) + 1
             if user is None:
                 print("Showing number of given reactions per user:")
                 response = "```"
                 if len(rows) > 0:
                     for row in rows:
-                        print("%-14s %+14d" % (users[row[0]], row[1]))
-                        response += "{:14} {:14d}\n".format(users[row[0]],row[1])
+                        output = f"{users[row[0]]:{column_width}} {row[1]}"
+                        print(output)
+                        response += f"{output}\n"
+
                 else:
                     response += "no reactions found"
                     print("none found")
