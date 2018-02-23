@@ -62,7 +62,7 @@ Modes:
 # create db table if none exists
 def create_db():
     try:
-        con = db.connect('reactions.db')
+        con = db.connect(FILE_DB)
         cur = con.cursor()
         cur.execute('DROP TABLE IF EXISTS reactions')
         cur.executescript("""
@@ -85,8 +85,8 @@ def create_db():
 
 # insert reaction into db table
 def db_insert(from_user, to_user, reaction, counter):
-    if os.path.isfile('reactions.db'):
-        con = db.connect('reactions.db')
+    if os.path.isfile(FILE_DB):
+        con = db.connect(FILE_DB)
         cur = con.cursor()
         cur.execute('INSERT INTO reactions VALUES(?,?,?,?)', \
             (from_user, to_user, reaction, counter));
@@ -200,8 +200,8 @@ def bot_version(channel_id):
 
 # print top recipients of a reaction
 def print_top(reaction, channel_id, mode):
-    if os.path.isfile('reactions.db'):
-        con = db.connect('reactions.db')
+    if os.path.isfile(FILE_DB):
+        con = db.connect(FILE_DB)
         with con:
             cur = con.cursor()
             sql = "SELECT to_user, sum(counter) as count from reactions where reaction=? group by to_user order by count desc"
@@ -235,8 +235,8 @@ def print_top(reaction, channel_id, mode):
 
 # print received reactions
 def print_received(channel_id, user=None):
-    if os.path.isfile('reactions.db'):
-        con = db.connect('reactions.db')
+    if os.path.isfile(FILE_DB):
+        con = db.connect(FILE_DB)
         with con:
             cur = con.cursor()
             sql = "SELECT to_user, sum(counter) as count from reactions group by to_user order by count desc"
@@ -263,8 +263,8 @@ def print_received(channel_id, user=None):
 
 # print given reactions
 def print_given(channel_id, user=None):
-    if os.path.isfile('reactions.db'):
-        con = db.connect('reactions.db')
+    if os.path.isfile(FILE_DB):
+        con = db.connect(FILE_DB)
         with con:
             cur = con.cursor()
             sql = "SELECT from_user, sum(counter) as count from reactions group by from_user order by count desc"
@@ -290,13 +290,14 @@ def print_given(channel_id, user=None):
         sys.exit(2)
 
 def print_reactions(channel_id, user=None):
-    if not os.path.isfile('reactions.db'):
+    """ show the top 10 reactions """
+    if not os.path.isfile(FILE_DB):
         print("Can't find the database.\n")
         sys.exit(2)
-    con = db.connect('reactions.db')
+    con = db.connect(FILE_DB)
     with con:
         cur = con.cursor()
-        sql = "SELECT reaction, sum(counter) as count from reactions group by reaction order by count desc limit 10"
+        sql = "SELECT reaction, sum(counter) AS COUNT FROM reactions GROUP BY reaction ORDER BY count DESC LIMIT 10"
         cur.execute(sql)
         rows = cur.fetchall()
         column_width = len(max([row[0] for row in rows], key=len)) + 1
@@ -389,6 +390,7 @@ def sl_con_retry():
 
 # main
 if __name__ == '__main__':
+    FILE_DB = "reactions.db"
     args = docopt(help_message)
     runmode = None
     if args.get("quiet"):
@@ -398,7 +400,7 @@ if __name__ == '__main__':
     else:
         runmode = "dm"
     # initialize db if it doesn't exist
-    if os.path.exists('./reactions.db') == False:
+    if os.path.exists(FILE_DB) == False:
         create_db()
     # connect to slack
     sc = SlackClient(token)
