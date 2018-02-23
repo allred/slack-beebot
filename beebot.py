@@ -189,10 +189,10 @@ usage:
 def bot_version(channel_id):
     text = '''```
 {:{w}} {:{w}}
-{:{w}} {:{w}}
+{:{w}} {!s:{w}}
 ```'''.format(
     'started:', time_started,
-    'head:', rev_parse_head,
+    'head:', rev_parse_head.decode('utf-8'),
     w=14,
     )
     sc.api_call("chat.postMessage", channel=channel_id, text=text, as_user=True)
