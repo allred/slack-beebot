@@ -217,7 +217,7 @@ def print_top(reaction, channel_id, mode):
             cur.execute(sql, [reaction])
             con.commit()
             rows = cur.fetchall()
-            column_width = len(max([row[0] for row in rows], key=len)) + 1
+            column_width = len(max([users[row[0]] for row in rows], key=len)) + 1
             print("Showing %s %s" % (mode, reaction))
             response = "```"
             if len(rows) > 0:
