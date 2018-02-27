@@ -41,7 +41,6 @@ class timestamped:
             self.nl = False
         else:
             old_out.write(x)
-sys.stdout = timestamped()
 
 help_message = """
 Usage:
@@ -58,6 +57,13 @@ Modes:
     dm       Send replies via direct message just to the requestor. default
     quiet    Don't reply to "showme" requests.
 """
+
+class Beebot(object):
+    def __init__(self, **kwargs):
+        pass
+
+    def help_message(self):
+        return help_message
 
 # create db table if none exists
 def create_db():
@@ -397,6 +403,7 @@ def sl_con_retry():
 
 # main
 if __name__ == '__main__':
+    sys.stdout = timestamped()
     FILE_DB = "reactions.db"
     args = docopt(help_message)
     runmode = None
