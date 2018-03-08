@@ -395,9 +395,10 @@ def sl_connect(retry):
 
 def sl_con_retry():
     global con_retry
+    time_sleep = con_retry * 2
+    print("INFO: Connection retry #%d sleeping for %d seconds..." % (con_retry, time_sleep))
+    time.sleep(time_sleep)
     con_retry += 1
-    print("INFO: Connection retry #%d sleeping for %d seconds..." % (con_retry, con_retry*2))
-    time.sleep(con_retry*2)
     sl_connect(con_retry)
 
 
