@@ -360,7 +360,7 @@ def sl_connect(retry):
         if sc.rtm_connect():
             print('INFO: Bot connected and running in [ ' + runmode + ' ] mode!')
             global con_retry
-            con_retry = 0
+            con_retry = 1
             get_info()
             while True:
                 try:
@@ -368,8 +368,8 @@ def sl_connect(retry):
                     time.sleep(1)
                 except socket.error as e:
                     if isinstance(e.args, tuple):
-                        print("ERROR: errno is %d" % e[0])
-                        if e[0] == errno.EPIPE:
+                        print("ERROR: errno is %d" % e.args[0])
+                        if e.args[0] == errno.EPIPE:
                             # remote peer disconnected
                             print("ERROR: Detected remote disconnect")
                             sl_con_retry()
